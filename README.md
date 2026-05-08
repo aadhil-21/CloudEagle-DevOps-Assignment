@@ -46,44 +46,35 @@ Checkout → Unit Tests → Build → Security Scan → Push → Deploy → Heal
 ### Architecture Diagram
 
 ```mermaid
-graph TB
-    User[Internet User]
-    LB[Cloud Load Balancer]
-
+flowchart TD
+    User[Internet User] --> LB[Cloud Load Balancer]
+    
     subgraph GCP[Google Cloud Platform]
-        subgraph VPC[VPC: 10.0.0.0/16]
-            subgraph GKE[GKE Autopilot Cluster]
-                Pod1[sync-service Pod 1]
-                Pod2[sync-service Pod 2]
-                Pod3[sync-service Pod 3]
-                HPA[Auto-scaler: 3-20 pods]
+        subgraph VPC[VPC Network]
+            subgraph GKE[GKE Cluster]
+                App1[sync-service Pod]
+                App2[sync-service Pod]
+                App3[sync-service Pod]
             end
         end
     end
-
+    
     subgraph Atlas[MongoDB Atlas]
-        Primary[(Primary Node)]
-        Secondary1[(Secondary Node)]
-        Secondary2[(Secondary Node)]
+        DB1[(Primary Node)]
+        DB2[(Secondary Node)]
+        DB3[(Secondary Node)]
     end
-
-    Secrets[GCP Secret Manager]
-
-    User --> LB
-    LB --> Pod1
-    LB --> Pod2
-    LB --> Pod3
-
-    Pod1 --> Primary
-    Pod2 --> Primary
-    Pod3 --> Primary
-
-    Primary --> Secondary1
-    Primary --> Secondary2
-
-    Pod1 -.-> Secrets
-    Pod2 -.-> Secrets
-    Pod3 -.-> Secrets
+    
+    LB --> App1
+    LB --> App2
+    LB --> App3
+    
+    App1 --> DB1
+    App2 --> DB1
+    App3 --> DB1
+    
+    DB1 --> DB2
+    DB1 --> DB3
 
 
 1. Compute Platform: GKE Autopilot
