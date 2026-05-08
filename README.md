@@ -45,37 +45,69 @@ Checkout → Unit Tests → Build → Security Scan → Push → Deploy → Heal
 
 ### Architecture Diagram
 
-```mermaid
+```mermaid  
 flowchart TD
+
     User[Internet User] --> LB[Cloud Load Balancer]
-    
+
     subgraph GCP[Google Cloud Platform]
+
         subgraph VPC[VPC Network]
+
+            LB --> ING[Ingress Controller]
+
             subgraph GKE[GKE Cluster]
-                App1[sync-service Pod]
-                App2[sync-service Pod]
-                App3[sync-service Pod]
+
+                HPA[Horizontal Pod Autoscaler]
+
+                App1[sync-service Pod 1]
+                App2[sync-service Pod 2]
+                App3[sync-service Pod 3]
+
+                HPA --> App1
+                HPA --> App2
+                HPA --> App3
+
             end
+
+            SM[Secret Manager]
+            MON[Monitoring and Logging]
+
         end
+
+        Jenkins[Jenkins CI/CD]
+
     end
-    
+
     subgraph Atlas[MongoDB Atlas]
+
         DB1[(Primary Node)]
         DB2[(Secondary Node)]
         DB3[(Secondary Node)]
+
+        DB1 --> DB2
+        DB1 --> DB3
+
     end
-    
-    LB --> App1
-    LB --> App2
-    LB --> App3
-    
+
+    ING --> App1
+    ING --> App2
+    ING --> App3
+
     App1 --> DB1
     App2 --> DB1
     App3 --> DB1
-    
-    DB1 --> DB2
-    DB1 --> DB3
 
+    SM --> App1
+    SM --> App2
+    SM --> App3
+
+    MON --> App1
+    MON --> App2
+    MON --> App3
+
+    Jenkins --> GKE
+```
 
 1. Compute Platform: GKE Autopilot
 Decision: Google Kubernetes Engine (GKE) Autopilot
