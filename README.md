@@ -45,8 +45,7 @@ Checkout → Unit Tests → Build → Security Scan → Push → Deploy → Heal
 
 ### Architecture Diagram
 
-```mermaid
-
+```mermaid  
 flowchart TD
 
     User[Internet User] --> LB[Cloud Load Balancer]
@@ -108,6 +107,7 @@ flowchart TD
     MON --> App3
 
     Jenkins --> GKE
+```
 
 1. Compute Platform: GKE Autopilot
 Decision: Google Kubernetes Engine (GKE) Autopilot
